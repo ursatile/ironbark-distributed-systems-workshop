@@ -1,0 +1,19 @@
+﻿@model System.Collections.Generic.IEnumerable<AutoMate.Data.Entities.VehicleModel>
+
+@{
+    ViewBag.Title = "title";
+}
+
+<h2>All VehicleModels</h2>
+@foreach (var group in Model.GroupBy(m => m.Manufacturer).OrderBy(m => m.Key.Name)) {
+    <h3>@group.Key.Name</h3>
+    <ul>
+        @foreach (var carModel in group) {
+            <li>
+                <a href="@Url.Action("Vehicles", "VehicleModels", new {id = carModel.Code})">
+                    @carModel.Manufacturer.Name @carModel.Name
+                </a>
+            </li>
+        }
+    </ul>
+}
