@@ -16,7 +16,7 @@ namespace AutoMate.WebApp.Tests.Controllers.Api {
 
         public VehicleModelsControllerTests() {
             var db = new AutoMateCsvFileDatabase();
-            controller = new VehicleModelsController(db);
+            controller = new VehicleModelsController(db, null);
         }
 
         [Fact]

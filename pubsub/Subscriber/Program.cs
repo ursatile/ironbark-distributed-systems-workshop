@@ -4,7 +4,10 @@ using Messages.Events;
 
 var AMQP = "amqps://xwugqrcr:VJHyIwkBhFsn8s5OBkGRkXD1ZGjcqyiJ@diligent-wheat-koala.rmq4.cloudamqp.com/xwugqrcr";
 var bus = RabbitHutch.CreateBus(AMQP);
-bus.PubSub.Subscribe<KeyWasPressed>("SUBSCRIBER", evt => {
+bus.PubSub.Subscribe<KeyWasPressed>("dylanbeattie", evt => {
+    if ("aeiuo".Contains(evt.Key)) {
+        throw new Exception("This subscriber cannot handle vowels!");
+    }
     Console.WriteLine(evt.Key);
 });
 

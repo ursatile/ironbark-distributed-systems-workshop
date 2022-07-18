@@ -6,15 +6,19 @@ using System.Web.Http;
 using System.Web.Http.Results;
 using AutoMate.Data;
 using AutoMate.Data.Entities;
+using AutoMate.Messages.Events;
 using AutoMate.WebApp.Models;
+using MassTransit;
 
 namespace AutoMate.WebApp.Controllers.Api {
     public class VehicleModelsController : ApiController {
 
         private readonly IAutoMateDatabase db;
+        private readonly IBus bus;
 
-        public VehicleModelsController(IAutoMateDatabase db) {
+        public VehicleModelsController(IAutoMateDatabase db, IBus bus) {
             this.db = db;
+            this.bus = bus;
         }
 
         public IHttpActionResult Get() {
@@ -52,9 +56,23 @@ namespace AutoMate.WebApp.Controllers.Api {
                 VehicleModel = vehicleModel
             };
             db.CreateVehicle(vehicle);
+            PublishEvent(vehicle);
             return Created(
                 $"/api/vehicles/{vehicle.Registration}",
                 vehicle.ToResource());
+        }
+
+        private void PublishEvent(Vehicle vehicle) {
+            var e = new NewVehicleListed
+            {
+                Color = vehicle.Color,
+                Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
+                VehicleModel = vehicle.VehicleModel.Name,
+                Registration = vehicle.Registration,
+                Year = vehicle.Year,
+                ListedAt = DateTimeOffset.UtcNow
+            };
+            bus.Publish(e);
         }
     }
 }

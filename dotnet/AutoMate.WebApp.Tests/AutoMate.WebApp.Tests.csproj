@@ -45,6 +45,9 @@
     <Reference Include="EmptyFiles, Version=1.0.0.0, Culture=neutral, PublicKeyToken=c7a34512ecd69090, processorArchitecture=MSIL">
       <HintPath>..\packages\EmptyFiles.2.3.3\lib\net461\EmptyFiles.dll</HintPath>
     </Reference>
+    <Reference Include="MassTransit.Abstractions, Version=8.0.5.0, Culture=neutral, PublicKeyToken=b8e0e9f2f1e657fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\MassTransit.Abstractions.8.0.5\lib\net461\MassTransit.Abstractions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Shouldly, Version=4.0.3.0, Culture=neutral, PublicKeyToken=6042cbcb05cbc941, processorArchitecture=MSIL">
       <HintPath>..\packages\Shouldly.4.0.3\lib\netstandard2.0\Shouldly.dll</HintPath>
