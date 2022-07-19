@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.AuditLog", "AutoMa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.StatusChecker", "AutoMate.StatusChecker\AutoMate.StatusChecker.csproj", "{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autobarn.PricingServer", "Autobarn.PricingServer\Autobarn.PricingServer.csproj", "{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.PricingClient", "AutoMate.PricingClient\AutoMate.PricingClient.csproj", "{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}.Release|Any CPU.Build.0 = Release|Any CPU
+		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
