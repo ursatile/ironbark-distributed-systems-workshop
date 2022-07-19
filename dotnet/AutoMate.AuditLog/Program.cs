@@ -14,7 +14,7 @@ namespace AutoMate.AuditLog
                     services.AddMassTransit(mt => {
                         mt.UsingRabbitMq((context, config) => {
                             config.Host(RABBITMQ_URL);
-                            config.ReceiveEndpoint("new-vehicle-listed", e => {
+                            config.ReceiveEndpoint("dylanbeattie-automate-vehicle-audit-logger", e => {
                                 e.Consumer(() => new NewVehicleAuditLogger());
                             });
                         });

@@ -9,9 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.WebApp.Tests", "Au
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Data", "AutoMate.Data\AutoMate.Data.csproj", "{31585EC1-1C21-4F18-93DA-5F4FB0CE9931}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.Messages", "AutoMate.Messages\AutoMate.Messages.csproj", "{C8330860-1146-4667-96AE-5AC66415FC06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Messages", "AutoMate.Messages\AutoMate.Messages.csproj", "{C8330860-1146-4667-96AE-5AC66415FC06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.AuditLog", "AutoMate.AuditLog\AutoMate.AuditLog.csproj", "{4593448B-078F-4A1D-AC02-8143BB383F14}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.AuditLog", "AutoMate.AuditLog\AutoMate.AuditLog.csproj", "{4593448B-078F-4A1D-AC02-8143BB383F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.StatusChecker", "AutoMate.StatusChecker\AutoMate.StatusChecker.csproj", "{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{4593448B-078F-4A1D-AC02-8143BB383F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4593448B-078F-4A1D-AC02-8143BB383F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4593448B-078F-4A1D-AC02-8143BB383F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
