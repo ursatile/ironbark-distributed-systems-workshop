@@ -402,7 +402,10 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>65045</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
+	        
+	      <!--REMOVE THIS LINE IF THE PROJECT WON'T LOAD! -->
           <IISUrl>https://workshop.ursatile.com/</IISUrl>
+
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
