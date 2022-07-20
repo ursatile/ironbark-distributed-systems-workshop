@@ -24,7 +24,11 @@ namespace AutoMate.Saga {
                             config.ConfigureEndpoints(context);
                         });
                         mt.AddSagaStateMachine<VehicleListingSaga, VehicleListingState>()
-                            .InMemoryRepository();
+                            .RedisRepository("127.0.0.1");
+                        // .InMemoryRepository();
+                        // To use Redis:
+                        // docker run -d --name masstransit-redis -p 6379:6379 redis
+
                     });
                 })
                 .Build();

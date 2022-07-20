@@ -2,7 +2,7 @@
 using MassTransit;
 
 namespace AutoMate.Saga {
-    public class VehicleListingState : SagaStateMachineInstance {
+    public class VehicleListingState : SagaStateMachineInstance, ISagaVersion {
         public Guid CorrelationId { get; set; }
         public string Registration { get; set; }
         public string Manufacturer { get; set; }
@@ -11,7 +11,8 @@ namespace AutoMate.Saga {
         public string Color { get; set; }
         public int Price { get; set; }
         public string CurrencyCode { get; set; }
-        public State CurrentState { get; set; }
+        public string CurrentState { get; set; }
 
+        public int Version { get; set; }
     }
 }
