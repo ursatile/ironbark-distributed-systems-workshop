@@ -1,4 +1,5 @@
 ﻿using System;
+using AutoMate.Messages.Commands;
 using AutoMate.Messages.Events;
 using MassTransit;
 

@@ -13,7 +13,7 @@ namespace AutoMate.StatusChecker {
         public const string STOLEN = nameof(STOLEN);
     }
 
-    public class NewVehicleStatusChecker : IConsumer<CheckVehicleStatus> {
+    public class CheckVehicleStatusConsumer : IConsumer<CheckVehicleStatus> {
         public const string STATUS_URI = "https://ursatile-vehicle-info-checker.azurewebsites.net/api/CheckVehicleStatus";
 
         public async Task Consume(ConsumeContext<CheckVehicleStatus> context) {
@@ -22,18 +22,19 @@ namespace AutoMate.StatusChecker {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, GetStatusURL(message));
             var httpResponse = await httpClient.SendAsync(httpRequestMessage);
             var statusFromApi = await httpResponse.Content.ReadAsStringAsync();
-            await Console.Out.WriteLineAsync(message.Registration);
-            await Console.Out.WriteLineAsync($"Status {statusFromApi}");
-            var eventData = new { message.Registration };
+            await Console.Out.WriteLineAsync($"Checking status for: {message.Registration}");
+            await Console.Out.WriteLineAsync($"Status: {statusFromApi}");
+            await Console.Out.WriteLineAsync($"context.CorrelationID: {context.CorrelationId}");
+            await Console.Out.WriteLineAsync($"message.CorrelationID: {message.CorrelationId}");
             switch (statusFromApi) {
                 case VehicleStatus.OK:
-                    await context.Publish<VehicleApprovedForListing>(eventData);
+                    await context.Publish<VehicleApprovedForListing>(new { message.Registration, message.CorrelationId });
                     break;
                 case VehicleStatus.STOLEN:
-                    await context.Publish<VehicleConfirmedStolen>(eventData);
+                    await context.Publish<VehicleConfirmedStolen>(new { message.Registration, message.CorrelationId });
                     break;
                 case VehicleStatus.WRITTEN_OFF:
-                    await context.Publish<VehicleConfirmedWrittenOff>(eventData);
+                    await context.Publish<VehicleConfirmedWrittenOff>(new { message.Registration, message.CorrelationId });
                     break;
             }
         }

@@ -5,6 +5,7 @@ using Grpc.Net.Client;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
 using Autobarn.PricingEngine;
+using AutoMate.Messages.Commands;
 
 namespace AutoMate.PricingClient {
     class Program {
@@ -21,7 +22,8 @@ namespace AutoMate.PricingClient {
                     services.AddMassTransit(mt => {
                         mt.UsingRabbitMq((context, config) => {
                             config.Host(RABBITMQ_URL);
-                            config.ReceiveEndpoint("automate-pricing-client", e => {
+                            config.ConfigureEndpoints(context);
+                            config.ReceiveEndpoint("calculate-vehicle-price", e => {
                                 e.Consumer(() => new NewVehiclePriceCalculator(grpcClient));
                             });
                         });
@@ -32,13 +34,13 @@ namespace AutoMate.PricingClient {
         }
     }
 
-    public class NewVehiclePriceCalculator : IConsumer<NewVehicleAvailableForPricing> {
+    public class NewVehiclePriceCalculator : IConsumer<CalculateVehiclePrice> {
         private readonly Pricer.PricerClient grpcClient;
 
         public NewVehiclePriceCalculator(Pricer.PricerClient grpcClient) {
             this.grpcClient = grpcClient;
         }
-        public async Task Consume(ConsumeContext<NewVehicleAvailableForPricing> context) {
+        public async Task Consume(ConsumeContext<CalculateVehiclePrice> context) {
             await Console.Out.WriteLineAsync(
                 $"Using gRPC to get price for {context.Message.Manufacturer} {context.Message.VehicleModel}...");
             var request = new PriceRequest {
@@ -49,7 +51,11 @@ namespace AutoMate.PricingClient {
             };
             var reply = await grpcClient.GetPriceAsync(request);
             await Console.Out.WriteLineAsync($"Got a price! {reply.Price} {reply.CurrencyCode}");
-            // TODO: publish something here?
+            await context.Publish<VehiclePriceCalculated>(new {
+                context.CorrelationId,
+                reply.Price,
+                reply.CurrencyCode
+            });
         }
     }
 }

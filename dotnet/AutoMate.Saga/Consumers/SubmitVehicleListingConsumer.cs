@@ -10,8 +10,7 @@ namespace AutoMate.Saga.Consumers {
     public class SubmitVehicleListingConsumer : IConsumer<SubmitVehicleListing> {
         public async Task Consume(ConsumeContext<SubmitVehicleListing> context) {
             await Console.Out.WriteLineAsync($"We got a SubmitVehicleListing command: {context.Message.Registration}");
-            var evt = new VehicleListingSubmitted
-            {
+            var evt = new {
                 Color = context.Message.Color,
                 ListedAt = DateTimeOffset.UtcNow,
                 Year = context.Message.Year,
@@ -19,7 +18,7 @@ namespace AutoMate.Saga.Consumers {
                 Registration = context.Message.Registration,
                 VehicleModel = context.Message.VehicleModel
             };
-            await context.Publish(evt);
+            await context.Publish<VehicleListingSubmitted>(evt);
             await Console.Out.WriteLineAsync($"Published event.");
         }
     }

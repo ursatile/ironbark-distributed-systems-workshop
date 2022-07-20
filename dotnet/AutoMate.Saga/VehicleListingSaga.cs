@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using AutoMate.Messages.Commands;
 using AutoMate.Messages.Events;
 using MassTransit;
@@ -12,38 +10,43 @@ namespace AutoMate.Saga {
         public Event<VehicleConfirmedStolen> VehicleConfirmedStolen { get; private set; }
         public Event<VehicleConfirmedWrittenOff> VehicleConfirmedWrittenOff { get; private set; }
         public Event<VehicleApprovedForListing> VehicleApprovedForListing { get; private set; }
+        public Event<VehiclePriceCalculated> VehiclePriceCalculated { get; private set; }
 
         public State AwaitingStatus { get; private set; }
         public State AwaitingPrice { get; private set; }
         public State Stolen { get; private set; }
         public State WrittenOff { get; private set; }
+        public State ReadyToPublish { get; private set; }
 
         public VehicleListingSaga() {
 
             InstanceState(x => x.CurrentState);
 
-            Event(() => VehicleListingSubmitted, listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration)
-                .SelectId(context => Guid.NewGuid()));
-
-            Event(() => VehicleConfirmedWrittenOff, listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleConfirmedStolen, listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleApprovedForListing, listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleListingSubmitted, e => e.SelectId(_ => NewId.NextGuid())); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration).SelectId(context => Guid.NewGuid()));
+            Event(() => VehicleConfirmedWrittenOff); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleConfirmedStolen); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleApprovedForListing); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehiclePriceCalculated); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
 
             Initially(
                 When(VehicleListingSubmitted)
                     .ThenAsync(async context => {
                         Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
                         Console.WriteLine($"{context.Message}");
-                        //await context.Publish<CheckVehicleStatus>(new {
-                        //    registration = context.Message.Registration
-                        //});
-                        //TODO: why does publishing work here but sending doesn't?
+                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
+                        context.Saga.Year = context.Message.Year;
+                        context.Saga.Registration = context.Message.Registration;
+                        context.Saga.Color = context.Message.Color;
+                        context.Saga.Manufacturer = context.Message.Manufacturer;
+                        context.Saga.VehicleModel = context.Message.VehicleModel;
                         await endpoint.Send<CheckVehicleStatus>(new {
-                            registration = context.Message.Registration
+                            context.Message.Registration,
+                            context.Saga.CorrelationId
                         });
                     }).TransitionTo(AwaitingStatus)
                 );
+
             During(AwaitingStatus,
                 When(VehicleConfirmedStolen)
                     .Then(context => {
@@ -51,6 +54,8 @@ namespace AutoMate.Saga {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
+                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
+                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
@@ -58,23 +63,45 @@ namespace AutoMate.Saga {
                 When(VehicleConfirmedWrittenOff)
                     .Then(context => {
                         var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.Magenta;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
+                        Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
+                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
+                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
                     .TransitionTo(WrittenOff),
                 When(VehicleApprovedForListing)
-                    .Then(context => {
+                    .ThenAsync(async context => {
                         var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
+                        Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
+                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
+                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
+                        var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
+                        await endpoint.Send<CalculateVehiclePrice>(new {
+                            context.Saga.Registration,
+                            context.Saga.CorrelationId,
+                            context.Saga.Year,
+                            context.Saga.Color,
+                            context.Saga.Manufacturer,
+                            context.Saga.VehicleModel
+                        });
                     })
                     .TransitionTo(AwaitingPrice));
+            During(AwaitingPrice,
+                When(VehiclePriceCalculated)
+                    .Then(context => {
+                        Console.WriteLine(
+                            $"Calculated a price: {context.Message.Price} {context.Message.CurrencyCode}");
+                        context.Saga.Price = context.Message.Price;
+                        context.Saga.CurrencyCode = context.Message.CurrencyCode;
+                    })
+                    .TransitionTo(ReadyToPublish));
 
 
         }

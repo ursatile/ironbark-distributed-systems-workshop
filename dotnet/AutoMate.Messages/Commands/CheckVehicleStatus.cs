@@ -1,11 +1,12 @@
 ﻿using System;
+using MassTransit;
 
 namespace AutoMate.Messages.Commands {
-    public interface CheckVehicleStatus {
+    public interface CheckVehicleStatus : CorrelatedBy<Guid> {
         string Registration { get; set; }
     }
 
-    public interface SubmitVehicleListing {
+    public interface SubmitVehicleListing: CorrelatedBy<Guid> {
         string Registration { get; set; }
         string Manufacturer { get; set; }
         string VehicleModel { get; set; }
@@ -14,17 +15,10 @@ namespace AutoMate.Messages.Commands {
         DateTimeOffset VehicleListedAt { get; set; }
     }
 
-    //public class SubmitVehicleListing {
-    //    public override string ToString() {
-    //        return $"{Registration} ({Manufacturer} {VehicleModel}, {Color}, {Year})";
-    //    }
-
-    //    public string Registration { get; set; }
-    //    public string Manufacturer { get; set; }
-    //    public string VehicleModel { get; set; }
-    //    public string Color { get; set; }
-    //    public int Year { get; set; }
-    //    public DateTimeOffset VehicleListedAt { get; set; }
-    //}
-
+    public interface CalculateVehiclePrice : CorrelatedBy<Guid> {
+        string Manufacturer { get; set; }
+        string VehicleModel { get; set; }
+        string Color { get; set; }
+        int Year { get; set; }
+    }
 }
