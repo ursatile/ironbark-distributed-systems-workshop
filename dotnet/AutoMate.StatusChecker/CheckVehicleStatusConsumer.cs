@@ -18,17 +18,15 @@ namespace AutoMate.StatusChecker {
             var statusFromApi = await httpResponse.Content.ReadAsStringAsync();
             await Console.Out.WriteLineAsync($"Checking status for: {message.Registration}");
             await Console.Out.WriteLineAsync($"Status: {statusFromApi}");
-            await Console.Out.WriteLineAsync($"context.CorrelationID: {context.CorrelationId}");
-            await Console.Out.WriteLineAsync($"message.CorrelationID: {message.CorrelationId}");
             switch (statusFromApi) {
                 case VehicleStatus.OK:
-                    await context.Publish<VehicleApprovedForListing>(new { message.Registration, message.CorrelationId });
+                    await context.Publish<VehicleApprovedForListing>(new { message.Registration });
                     break;
                 case VehicleStatus.STOLEN:
-                    await context.Publish<VehicleConfirmedStolen>(new { message.Registration, message.CorrelationId });
+                    await context.Publish<VehicleConfirmedStolen>(new { message.Registration });
                     break;
                 case VehicleStatus.WRITTEN_OFF:
-                    await context.Publish<VehicleConfirmedWrittenOff>(new { message.Registration, message.CorrelationId });
+                    await context.Publish<VehicleConfirmedWrittenOff>(new { message.Registration });
                     break;
             }
         }

@@ -40,7 +40,6 @@ namespace AutoMate.Saga {
                     .ThenAsync(async context => {
                         Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
                         Console.WriteLine($"{context.Message}");
-                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
                         context.Saga.Year = context.Message.Year;
                         context.Saga.Registration = context.Message.Registration;
@@ -49,7 +48,6 @@ namespace AutoMate.Saga {
                         context.Saga.VehicleModel = context.Message.VehicleModel;
                         await endpoint.Send<CheckVehicleStatus>(new {
                             context.Message.Registration,
-                            context.Saga.CorrelationId
                         });
                     }).TransitionTo(AwaitingStatus)
                 );
@@ -61,7 +59,6 @@ namespace AutoMate.Saga {
                         Console.ForegroundColor = ConsoleColor.Red;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
-                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
@@ -72,7 +69,6 @@ namespace AutoMate.Saga {
                         Console.ForegroundColor = ConsoleColor.Magenta;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
-                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
@@ -83,7 +79,6 @@ namespace AutoMate.Saga {
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
-                        Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
