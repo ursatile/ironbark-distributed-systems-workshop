@@ -47,39 +47,4 @@ namespace AutoMate.Saga {
             await host.StopAsync();
         }
     }
-
-    public class VehicleListingSaga : MassTransitStateMachine<VehicleListingState> {
-
-        public Event<VehicleListingSubmitted> VehicleListingSubmitted { get; private set; }
-
-        public State AwaitingStatus { get; private set; }
-        public State AwaitingPrice { get; private set; }
-        public State Stolen { get; private set; }
-        public State WrittenOff { get; private set; }
-
-        public VehicleListingSaga() {
-
-            InstanceState(x => x.CurrentState);
-
-            Event(() => VehicleListingSubmitted, listing => listing
-                .CorrelateBy(state => state.Registration, context => context.Message.Registration)
-                .SelectId(context => Guid.NewGuid()));
-
-            Initially(
-                When(VehicleListingSubmitted)
-                    .ThenAsync(async context => {
-                        Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
-                        Console.WriteLine($"{context.Message}");
-                        await context.Publish<CheckVehicleStatus>(new {
-                           registration = context.Message.Registration
-                        });
-                        //TODO: why does publishing work here but sending doesn't?
-                        //var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
-                        //await endpoint.Send<CheckVehicleStatus>(new {
-                        //    registration = context.Message.Registration
-                        //});
-                    }).TransitionTo(AwaitingStatus)
-                );
-        }
-    }
 }

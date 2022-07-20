@@ -65,7 +65,7 @@ namespace AutoMate.WebApp.Controllers.Api {
         }
 
         private async Task SendSubmitVehicleListingCommand(Vehicle vehicle) {
-            var command = new SubmitVehicleListing {
+            var command = new {
                 Color = vehicle.Color,
                 Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
                 VehicleModel = vehicle.VehicleModel.Name,

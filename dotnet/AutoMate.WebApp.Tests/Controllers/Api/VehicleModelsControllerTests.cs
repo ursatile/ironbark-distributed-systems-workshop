@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMate.Data;
 using AutoMate.WebApp.Controllers.Api;
@@ -43,24 +44,24 @@ namespace AutoMate.WebApp.Tests.Controllers.Api {
         }
 
         [Fact]
-        public void POST_New_Vehicle_With_Existing_Registration_Returns_Conflict() {
+        public async Task POST_New_Vehicle_With_Existing_Registration_Returns_Conflict() {
             var dto = new VehicleDto {
                 Year = 1985,
                 Color = "Green",
                 Registration = "OUTATIME"
             };
-            var result = controller.Post("dmc-delorean", dto) as NegotiatedContentResult<string>;
+            var result = await controller.Post("dmc-delorean", dto) as NegotiatedContentResult<string>;
             result.StatusCode.ShouldBe(HttpStatusCode.Conflict);
         }
 
         [Fact]
-        public void POST_New_Vehicle_Creates_Vehicle() {
+        public async Task POST_New_Vehicle_Creates_Vehicle() {
             var dto = new VehicleDto {
                 Year = 1985,
                 Color = "Green",
                 Registration = "XUNIT001"
             };
-            var result = controller.Post("dmc-delorean", dto) as CreatedNegotiatedContentResult<ExpandoObject>;
+            var result = await controller.Post("dmc-delorean", dto) as CreatedNegotiatedContentResult<ExpandoObject>;
             result.ShouldNotBeNull();
             result.Location.ToString().ShouldBe("/api/vehicles/XUNIT001");
             dynamic vehicle = result.Content;
