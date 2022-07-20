@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autobarn.PricingServer", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.PricingClient", "AutoMate.PricingClient\AutoMate.PricingClient.csproj", "{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.Saga", "AutoMate.Saga\AutoMate.Saga.csproj", "{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Saga", "AutoMate.Saga\AutoMate.Saga.csproj", "{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

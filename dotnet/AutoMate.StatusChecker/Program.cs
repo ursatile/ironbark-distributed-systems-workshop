@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Sinks.Graylog;
 
 namespace AutoMate.StatusChecker {
     class Program {
@@ -19,11 +21,19 @@ namespace AutoMate.StatusChecker {
                         });
                     });
                 })
+                .UseSerilog(ConfigureLogger)
                 .Build();
             await host.StartAsync();
             Console.WriteLine("AutoMate.StatusChecker running! Press Enter to quit.");
             Console.ReadLine();
             await host.StopAsync();
+        }
+
+        private static void ConfigureLogger(HostBuilderContext host, LoggerConfiguration log) {
+            log.MinimumLevel.Debug();
+            log.WriteTo.Console();
+            log.WriteTo.Graylog(new GraylogSinkOptions { HostnameOrAddress = "localhost", Port = 12201 });
+            log.Enrich.WithProcessName();
         }
     }
 }

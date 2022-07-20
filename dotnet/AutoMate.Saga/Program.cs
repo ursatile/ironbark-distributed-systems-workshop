@@ -5,6 +5,8 @@ using AutoMate.Saga.Consumers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Sinks.Graylog;
 
 namespace AutoMate.Saga {
     class Program {
@@ -14,17 +16,9 @@ namespace AutoMate.Saga {
         static async Task Main(string[] args) {
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services => {
-                    services.AddMassTransit(mt => {
-                        mt.AddConsumersFromNamespaceContaining<SubmitVehicleListingConsumer>();
-                        mt.SetKebabCaseEndpointNameFormatter();
-                        mt.UsingRabbitMq((context, config) => {
-                            config.Host(RABBITMQ_URL);
-                            config.ConfigureEndpoints(context);
-                        });
-                        mt.AddSagaStateMachine<VehicleListingSaga, VehicleListingState>()
-                            .InMemoryRepository();
-                    });
+                    services.AddMassTransit(ConfigureMassTransit);
                 })
+                .UseSerilog(ConfigureLogger)
                 .Build();
 
             await host.StartAsync();
@@ -37,8 +31,6 @@ namespace AutoMate.Saga {
                 Console.WriteLine(String.Empty.PadRight(40, '='));
                 Console.WriteLine("1: endpoint.Send<SubmitVehicleListing>()");
                 Console.WriteLine("2: bus.Publish<SubmitVehicleListing>()");
-                Console.WriteLine("3: endpoint.Send<CheckVehicleStatus>()");
-                Console.WriteLine("4: bus.Publish<CheckVehicleStatus>()");
                 switch (Console.ReadKey(true).Key) {
                     case ConsoleKey.Escape: goto ESCAPE;
                     case ConsoleKey.D1:
@@ -50,26 +42,35 @@ namespace AutoMate.Saga {
                             Registration = registration,
                             Year = 1985
                         });
-                        Console.WriteLine($"Sent SubmitVehicleListing");
+                        Log.Logger.Debug("Sent SubmitVehicleListing");
                         break;
                     case ConsoleKey.D2:
                         await bus.Publish<SubmitVehicleListing>(new { Registration = registration });
-                        Console.WriteLine($"Published SubmitVehicleListing");
-                        break;
-                    case ConsoleKey.D3:
-                        endpoint = await endpointProvider.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
-                        await endpoint.Send<CheckVehicleStatus>(new { Registration = registration });
-                        Console.WriteLine($"Sent CheckVehicleStatus");
-                        break;
-                    case ConsoleKey.D4:
-                        await bus.Publish<CheckVehicleStatus>(new { Registration = registration });
-                        Console.WriteLine($"Published CheckVehicleStatus");
+                        Log.Logger.Debug("Published SubmitVehicleListing");
                         break;
                 }
             }
         ESCAPE:
             Console.WriteLine("We're outta here!");
             await host.StopAsync();
+        }
+
+        private static void ConfigureLogger(HostBuilderContext host, LoggerConfiguration log) {
+            log.MinimumLevel.Debug();
+            log.WriteTo.Console();
+            log.WriteTo.Graylog(new GraylogSinkOptions { HostnameOrAddress = "localhost", Port = 12201 });
+            log.Enrich.WithProcessName();
+        }
+
+        private static void ConfigureMassTransit(IBusRegistrationConfigurator mt) {
+            mt.AddConsumersFromNamespaceContaining<SubmitVehicleListingConsumer>();
+            mt.SetKebabCaseEndpointNameFormatter();
+            mt.UsingRabbitMq((context, config) => {
+                config.Host(RABBITMQ_URL);
+                config.ConfigureEndpoints(context);
+            });
+            mt.AddSagaStateMachine<VehicleListingSaga, VehicleListingState>()
+                .InMemoryRepository();
         }
     }
 }

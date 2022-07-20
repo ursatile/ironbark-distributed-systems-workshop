@@ -2,6 +2,7 @@
 using AutoMate.Messages.Commands;
 using AutoMate.Messages.Events;
 using MassTransit;
+using Serilog;
 
 namespace AutoMate.Saga {
     public class VehicleListingSaga : MassTransitStateMachine<VehicleListingState> {
@@ -38,8 +39,7 @@ namespace AutoMate.Saga {
             Initially(
                 When(VehicleListingSubmitted)
                     .ThenAsync(async context => {
-                        Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
-                        Console.WriteLine($"{context.Message}");
+                        Log.Logger.Debug("Received VehicleListingSubmitted {@message}", context.Message);
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
                         context.Saga.Year = context.Message.Year;
                         context.Saga.Registration = context.Message.Registration;
@@ -55,32 +55,35 @@ namespace AutoMate.Saga {
             During(AwaitingStatus,
                 When(VehicleConfirmedStolen)
                     .Then(context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Warning("Vehicle Confirmed Stolen! {@message}", context.Message);
+                        //var oldColor = Console.ForegroundColor;
+                        //Console.ForegroundColor = ConsoleColor.Red;
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.ForegroundColor = oldColor;
                     })
                     .TransitionTo(Stolen),
                 When(VehicleConfirmedWrittenOff)
                     .Then(context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Warning("Vehicle Confirmed Written Off! {@message}", context.Message);
+                        //var oldColor = Console.ForegroundColor;
+                        //Console.ForegroundColor = ConsoleColor.Magenta;
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.ForegroundColor = oldColor;
                     })
                     .TransitionTo(WrittenOff),
                 When(VehicleApprovedForListing)
                     .ThenAsync(async context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Information("Vehicle approved for listing: {@message}", context.Message);
+                        //var oldColor = Console.ForegroundColor;
+                        //Console.ForegroundColor = ConsoleColor.Yellow;
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
+                        //Console.WriteLine(String.Empty.PadRight(60, 'X'));
+                        //Console.ForegroundColor = oldColor;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
                         await endpoint.Send<CalculateVehiclePrice>(new {
                             context.Saga.Registration,
