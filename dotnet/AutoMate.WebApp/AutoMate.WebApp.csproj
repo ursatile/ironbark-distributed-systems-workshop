@@ -236,7 +236,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\Api\DefaultController.cs" />
+    <Compile Include="Controllers\Api\WelcomeController.cs" />
     <Compile Include="Controllers\Api\Hal.cs" />
     <Compile Include="Controllers\Api\HypermediaExtensions.cs" />
     <Compile Include="Controllers\Api\VehicleModelsController.cs" />
@@ -402,10 +402,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>65045</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-	        
-	      <!--REMOVE THIS LINE IF THE PROJECT WON'T LOAD! -->
           <IISUrl>https://workshop.ursatile.com/</IISUrl>
-
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

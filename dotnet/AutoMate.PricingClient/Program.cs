@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMate.Messages.Events;
 using Grpc.Net.Client;
 using MassTransit;
 using Microsoft.Extensions.Hosting;
 using Autobarn.PricingEngine;
-using AutoMate.Messages.Commands;
 
 namespace AutoMate.PricingClient {
     class Program {
@@ -31,31 +29,6 @@ namespace AutoMate.PricingClient {
                 })
                 .Build().RunAsync();
             Console.WriteLine("AutoMate.PricingClient is running! Press Ctrl-C to quit.");
-        }
-    }
-
-    public class NewVehiclePriceCalculator : IConsumer<CalculateVehiclePrice> {
-        private readonly Pricer.PricerClient grpcClient;
-
-        public NewVehiclePriceCalculator(Pricer.PricerClient grpcClient) {
-            this.grpcClient = grpcClient;
-        }
-        public async Task Consume(ConsumeContext<CalculateVehiclePrice> context) {
-            await Console.Out.WriteLineAsync(
-                $"Using gRPC to get price for {context.Message.Manufacturer} {context.Message.VehicleModel}...");
-            var request = new PriceRequest {
-                Color = context.Message.Color,
-                Year = context.Message.Year,
-                Make = context.Message.Manufacturer,
-                Model = context.Message.VehicleModel
-            };
-            var reply = await grpcClient.GetPriceAsync(request);
-            await Console.Out.WriteLineAsync($"Got a price! {reply.Price} {reply.CurrencyCode}");
-            await context.Publish<VehiclePriceCalculated>(new {
-                context.CorrelationId,
-                reply.Price,
-                reply.CurrencyCode
-            });
         }
     }
 }

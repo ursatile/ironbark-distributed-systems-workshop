@@ -22,11 +22,18 @@ namespace AutoMate.Saga {
 
             InstanceState(x => x.CurrentState);
 
-            Event(() => VehicleListingSubmitted, e => e.SelectId(_ => NewId.NextGuid())); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration).SelectId(context => Guid.NewGuid()));
-            Event(() => VehicleConfirmedWrittenOff); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleConfirmedStolen); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleApprovedForListing); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehiclePriceCalculated); // , listing => listing.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleListingSubmitted,
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration)
+                    .SelectId(_ => NewId.NextGuid()));
+            ;
+            Event(() => VehicleConfirmedWrittenOff,
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleConfirmedStolen,
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleApprovedForListing,
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehiclePriceCalculated, 
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
 
             Initially(
                 When(VehicleListingSubmitted)
@@ -55,7 +62,6 @@ namespace AutoMate.Saga {
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
                         Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
-                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
@@ -67,7 +73,6 @@ namespace AutoMate.Saga {
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
                         Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
-                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                     })
@@ -79,13 +84,11 @@ namespace AutoMate.Saga {
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
                         Console.WriteLine($"context.Saga.CorrelationId: {context.Saga.CorrelationId}");
-                        Console.WriteLine($"context.Message.CorrelationId: {context.Message.CorrelationId}");
                         Console.WriteLine(String.Empty.PadRight(60, 'X'));
                         Console.ForegroundColor = oldColor;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
                         await endpoint.Send<CalculateVehiclePrice>(new {
                             context.Saga.Registration,
-                            context.Saga.CorrelationId,
                             context.Saga.Year,
                             context.Saga.Color,
                             context.Saga.Manufacturer,
@@ -102,8 +105,6 @@ namespace AutoMate.Saga {
                         context.Saga.CurrencyCode = context.Message.CurrencyCode;
                     })
                     .TransitionTo(ReadyToPublish));
-
-
         }
     }
 }

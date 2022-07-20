@@ -1,13 +1,12 @@
 ﻿using System;
 using MassTransit;
 
-namespace AutoMate.Messages.Events {
-    public interface VehicleListingSubmitted {
+namespace AutoMate.Messages.Commands {
+    public interface CalculateVehiclePrice : CorrelatedBy<Guid> {
+        string Registration { get; set; }
         string Manufacturer { get; set; }
         string VehicleModel { get; set; }
-        string Registration { get; set; }
         string Color { get; set; }
         int Year { get; set; }
-        DateTimeOffset ListedAt { get; set; }
     }
 }

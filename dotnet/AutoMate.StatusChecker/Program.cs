@@ -16,9 +16,6 @@ namespace AutoMate.StatusChecker {
                         mt.UsingRabbitMq((context, config) => {
                             config.Host(RABBITMQ_URL);
                             config.ConfigureEndpoints(context);
-                            //config.ReceiveEndpoint("check-vehicle-status", e => {
-                            //    e.Consumer(() => new NewVehicleStatusChecker());
-                            //});
                         });
                     });
                 })
