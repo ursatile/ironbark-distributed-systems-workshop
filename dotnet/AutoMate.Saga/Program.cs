@@ -52,7 +52,7 @@ namespace AutoMate.Saga {
 
         public Event<VehicleListingSubmitted> VehicleListingSubmitted { get; private set; }
 
-        public State Submitted { get; private set; }
+        public State AwaitingStatus { get; private set; }
         public State AwaitingPrice { get; private set; }
         public State Stolen { get; private set; }
         public State WrittenOff { get; private set; }
@@ -67,10 +67,18 @@ namespace AutoMate.Saga {
 
             Initially(
                 When(VehicleListingSubmitted)
-                    .Then(context => {
+                    .ThenAsync(async context => {
                         Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
                         Console.WriteLine($"{context.Message}");
-                    })
+                        await context.Publish<CheckVehicleStatus>(new {
+                           registration = context.Message.Registration
+                        });
+                        //TODO: why does publishing work here but sending doesn't?
+                        //var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
+                        //await endpoint.Send<CheckVehicleStatus>(new {
+                        //    registration = context.Message.Registration
+                        //});
+                    }).TransitionTo(AwaitingStatus)
                 );
         }
     }

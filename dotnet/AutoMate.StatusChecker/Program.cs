@@ -11,16 +11,19 @@ namespace AutoMate.StatusChecker {
             await Host.CreateDefaultBuilder(args)
                 .ConfigureServices(services => {
                     services.AddMassTransit(mt => {
+                        mt.AddConsumersFromNamespaceContaining<NewVehicleStatusChecker>();
+                        mt.SetKebabCaseEndpointNameFormatter();
                         mt.UsingRabbitMq((context, config) => {
                             config.Host(RABBITMQ_URL);
-                            config.ReceiveEndpoint("dylanbeattie", e => {
-                                e.Consumer(() => new NewVehicleStatusChecker());
-                            });
+                            config.ConfigureEndpoints(context);
+                            //config.ReceiveEndpoint("check-vehicle-status", e => {
+                            //    e.Consumer(() => new NewVehicleStatusChecker());
+                            //});
                         });
                     });
                 })
                 .Build().RunAsync();
-            Console.WriteLine("AutoMate.AuditLog running! Press Ctrl-C to quit.");
+            Console.WriteLine("AutoMate.StatusChecker running! Press Ctrl-C to quit.");
         }
     }
 }
