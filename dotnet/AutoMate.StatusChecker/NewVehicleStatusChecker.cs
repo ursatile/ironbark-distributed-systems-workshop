@@ -6,10 +6,10 @@ using AutoMate.Messages.Events;
 using MassTransit;
 
 namespace AutoMate.StatusChecker {
-    public class NewVehicleStatusChecker : IConsumer<NewVehicleListed> {
+    public class NewVehicleStatusChecker : IConsumer<VehicleListingSubmitted> {
         public const string STATUS_URI = "https://ursatile-vehicle-info-checker.azurewebsites.net/api/CheckVehicleStatus";
         public const string STATUS_OK = "OK";
-        public async Task Consume(ConsumeContext<NewVehicleListed> context) {
+        public async Task Consume(ConsumeContext<VehicleListingSubmitted> context) {
             var message = context.Message;
             var csv = $"{message.Registration},{message.Manufacturer},{message.VehicleModel},{message.Color},{message.Year},{message.ListedAt:O}";
 
@@ -32,7 +32,7 @@ namespace AutoMate.StatusChecker {
             }
         }
 
-        private static string GetStatusURL(NewVehicleListed message) {
+        private static string GetStatusURL(VehicleListingSubmitted message) {
             var builder = new UriBuilder(STATUS_URI);
             builder.Port = -1;
             var query = HttpUtility.ParseQueryString(builder.Query);

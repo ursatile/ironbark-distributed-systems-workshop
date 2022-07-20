@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace AutoMate.Messages.Events {
-    public class NewVehicleListed {
+    public class VehicleListingSubmitted {
         public string Manufacturer { get; set; }
         public string VehicleModel { get; set; }
         public string Registration { get; set; }

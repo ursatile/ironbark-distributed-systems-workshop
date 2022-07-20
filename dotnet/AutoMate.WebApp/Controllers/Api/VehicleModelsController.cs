@@ -63,7 +63,7 @@ namespace AutoMate.WebApp.Controllers.Api {
         }
 
         private void PublishEvent(Vehicle vehicle) {
-            var e = new NewVehicleListed
+            var e = new VehicleListingSubmitted
             {
                 Color = vehicle.Color,
                 Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
