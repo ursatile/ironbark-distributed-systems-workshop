@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using AutoMate.Data;
 using AutoMate.Data.Entities;
-using AutoMate.WebApp;
 using AutoMate.WebApp.Controllers;
 using Shouldly;
 using Xunit;

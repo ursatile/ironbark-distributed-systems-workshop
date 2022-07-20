@@ -1,5 +1,4 @@
 ﻿using System;
-using MassTransit;
 
 namespace AutoMate.Messages.Events {
     public interface VehicleListingSubmitted {

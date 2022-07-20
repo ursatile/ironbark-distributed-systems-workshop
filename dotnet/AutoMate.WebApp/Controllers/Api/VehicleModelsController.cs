@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Results;
 using AutoMate.Data;
 using AutoMate.Data.Entities;
-using AutoMate.Messages.Commands;
-using AutoMate.Messages.Events;
 using AutoMate.WebApp.Models;
 using MassTransit;
 
@@ -66,11 +62,11 @@ namespace AutoMate.WebApp.Controllers.Api {
 
         private async Task SendSubmitVehicleListingCommand(Vehicle vehicle) {
             var command = new {
-                Color = vehicle.Color,
+                vehicle.Color,
                 Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
                 VehicleModel = vehicle.VehicleModel.Name,
-                Registration = vehicle.Registration,
-                Year = vehicle.Year
+                vehicle.Registration,
+                vehicle.Year
             };
             var endpoint = await busControl.GetSendEndpoint(new Uri("queue:submit-vehicle-listing"));
             await endpoint.Send(command);

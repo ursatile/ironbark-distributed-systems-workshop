@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Reflection;
 using System.Threading.Tasks;
 using AutoMate.Messages.Commands;
-using AutoMate.Messages.Events;
 using AutoMate.Saga.Consumers;
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection;
