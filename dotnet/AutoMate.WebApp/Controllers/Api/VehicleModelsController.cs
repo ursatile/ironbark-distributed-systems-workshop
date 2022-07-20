@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
 using AutoMate.Data;
 using AutoMate.Data.Entities;
+using AutoMate.Messages.Commands;
 using AutoMate.Messages.Events;
 using AutoMate.WebApp.Models;
 using MassTransit;
@@ -14,11 +16,11 @@ namespace AutoMate.WebApp.Controllers.Api {
     public class VehicleModelsController : ApiController {
 
         private readonly IAutoMateDatabase db;
-        private readonly IBus bus;
+        private readonly IBus busControl;
 
-        public VehicleModelsController(IAutoMateDatabase db, IBus bus) {
+        public VehicleModelsController(IAutoMateDatabase db, IBusControl busControl) {
             this.db = db;
-            this.bus = bus;
+            this.busControl = busControl;
         }
 
         public IHttpActionResult Get() {
@@ -41,7 +43,7 @@ namespace AutoMate.WebApp.Controllers.Api {
             return Ok(resource);
         }
 
-        public IHttpActionResult Post(string id, [FromBody] VehicleDto dto) {
+        public async Task<IHttpActionResult> Post(string id, [FromBody] VehicleDto dto) {
             var existing = db.FindVehicle(dto.Registration);
             if (existing != default) {
                 var message =
@@ -56,23 +58,22 @@ namespace AutoMate.WebApp.Controllers.Api {
                 VehicleModel = vehicleModel
             };
             db.CreateVehicle(vehicle);
-            PublishEvent(vehicle);
+            await SendSubmitVehicleListingCommand(vehicle);
             return Created(
                 $"/api/vehicles/{vehicle.Registration}",
                 vehicle.ToResource());
         }
 
-        private void PublishEvent(Vehicle vehicle) {
-            var e = new VehicleListingSubmitted
-            {
+        private async Task SendSubmitVehicleListingCommand(Vehicle vehicle) {
+            var command = new SubmitVehicleListing {
                 Color = vehicle.Color,
                 Manufacturer = vehicle.VehicleModel.Manufacturer.Name,
                 VehicleModel = vehicle.VehicleModel.Name,
                 Registration = vehicle.Registration,
-                Year = vehicle.Year,
-                ListedAt = DateTimeOffset.UtcNow
+                Year = vehicle.Year
             };
-            bus.Publish(e);
+            var endpoint = await busControl.GetSendEndpoint(new Uri("queue:submit-vehicle-listing"));
+            await endpoint.Send(command);
         }
     }
 }

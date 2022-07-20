@@ -9,4 +9,16 @@ namespace AutoMate.Messages.Events {
         public int Year { get; set; }
         public DateTimeOffset ListedAt { get; set; }
     }
+
+    public interface VehicleConfirmedStolen {
+        string Registration { get; set; }
+    }
+
+    public interface VehicleConfirmedWrittenOff {
+        string Registration { get; set; }
+    }
+
+    public interface VehicleApprovedForListing {
+        string Registration { get; set; }
+    }
 }
