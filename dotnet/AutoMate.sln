@@ -13,11 +13,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Messages", "AutoMa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.AuditLog", "AutoMate.AuditLog\AutoMate.AuditLog.csproj", "{4593448B-078F-4A1D-AC02-8143BB383F14}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.StatusChecker", "AutoMate.StatusChecker\AutoMate.StatusChecker.csproj", "{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.StatusChecker", "AutoMate.StatusChecker\AutoMate.StatusChecker.csproj", "{D4D9C7B9-FDE1-4144-BCDD-E47ECC6B6F41}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autobarn.PricingServer", "Autobarn.PricingServer\Autobarn.PricingServer.csproj", "{1EFF3BCA-28B0-40AD-A0F1-365ECEB08799}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.PricingClient", "AutoMate.PricingClient\AutoMate.PricingClient.csproj", "{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.PricingClient", "AutoMate.PricingClient\AutoMate.PricingClient.csproj", "{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.Saga", "AutoMate.Saga\AutoMate.Saga.csproj", "{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{687A0EA2-82A4-4CAE-BB92-C612888EAFE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
