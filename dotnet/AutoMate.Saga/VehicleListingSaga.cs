@@ -2,6 +2,8 @@
 using AutoMate.Messages.Commands;
 using AutoMate.Messages.Events;
 using MassTransit;
+using Serilog;
+using Serilog.Core;
 
 namespace AutoMate.Saga {
     public class VehicleListingSaga : MassTransitStateMachine<VehicleListingState> {
@@ -33,8 +35,7 @@ namespace AutoMate.Saga {
             Initially(
                 When(VehicleListingSubmitted)
                     .ThenAsync(async context => {
-                        Console.WriteLine("Hey! We got a VehicleListingSubmitted event in our saga!");
-                        Console.WriteLine($"{context.Message}");
+                        Log.Logger.Debug("Handling VehicleListingSubmitted!");
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:check-vehicle-status"));
                         context.Saga.Year = context.Message.Year;
                         context.Saga.Registration = context.Message.Registration;
@@ -51,32 +52,17 @@ namespace AutoMate.Saga {
             During(AwaitingStatus,
                 When(VehicleConfirmedStolen)
                     .Then(context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Red;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Warning($"VEHICLE REPORTED STOLEN! {context.Saga.Registration}");
                     })
                     .TransitionTo(Stolen),
                 When(VehicleConfirmedWrittenOff)
                     .Then(context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Magenta;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"VEHICLE WRITTEN OFF! {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Warning("VEHICLE REPORTED WRITTEN OFF! {@message}", context.Message);
                     })
                     .TransitionTo(WrittenOff),
                 When(VehicleApprovedForListing)
                     .ThenAsync(async context => {
-                        var oldColor = Console.ForegroundColor;
-                        Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.WriteLine($"Vehicle approved for listing. {context.Saga.Registration}");
-                        Console.WriteLine(String.Empty.PadRight(60, 'X'));
-                        Console.ForegroundColor = oldColor;
+                        Log.Logger.Information("Vehicle approved for listing {@message}", context.Message);
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
                         await endpoint.Send<CalculateVehiclePrice>(new {
                             context.Saga.CorrelationId,
@@ -91,9 +77,7 @@ namespace AutoMate.Saga {
             During(AwaitingPrice,
                 When(VehiclePriceCalculated)
                     .ThenAsync(async context => {
-
-                        Console.WriteLine(
-                            $"Calculated a price: {context.Message.Price} {context.Message.CurrencyCode}");
+                        Log.Logger.Information("Calculated a price: {@message}", context.Message);
                         context.Saga.Price = context.Message.Price;
                         context.Saga.CurrencyCode = context.Message.CurrencyCode;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:put-vehicle-on-website"));
