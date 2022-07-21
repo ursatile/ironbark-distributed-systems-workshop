@@ -6,10 +6,10 @@ using AutoMate.Messages.Events;
 using MassTransit;
 
 namespace AutoMate.PricingClient {
-    public class NewVehiclePriceCalculator : IConsumer<CalculateVehiclePrice> {
+    public class CalculateVehiclePriceConsumer : IConsumer<CalculateVehiclePrice> {
         private readonly Pricer.PricerClient grpcClient;
 
-        public NewVehiclePriceCalculator(Pricer.PricerClient grpcClient) {
+        public CalculateVehiclePriceConsumer(Pricer.PricerClient grpcClient) {
             this.grpcClient = grpcClient;
         }
         public async Task Consume(ConsumeContext<CalculateVehiclePrice> context) {
@@ -25,6 +25,7 @@ namespace AutoMate.PricingClient {
             await Console.Out.WriteLineAsync($"Got a price! {reply.Price} {reply.CurrencyCode}");
             await context.Publish<VehiclePriceCalculated>(new {
                 context.Message.Registration,
+                context.Message.CorrelationId,
                 reply.Price,
                 reply.CurrencyCode
             });

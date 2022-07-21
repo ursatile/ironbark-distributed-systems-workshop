@@ -22,7 +22,7 @@ namespace AutoMate.PricingClient {
                             config.Host(RABBITMQ_URL);
                             config.ConfigureEndpoints(context);
                             config.ReceiveEndpoint("calculate-vehicle-price", e => {
-                                e.Consumer(() => new NewVehiclePriceCalculator(grpcClient));
+                                e.Consumer(() => new CalculateVehiclePriceConsumer(grpcClient));
                             });
                         });
                     });

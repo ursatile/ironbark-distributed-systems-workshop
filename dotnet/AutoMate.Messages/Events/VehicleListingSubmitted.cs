@@ -1,7 +1,8 @@
 ﻿using System;
+using MassTransit;
 
 namespace AutoMate.Messages.Events {
-    public interface VehicleListingSubmitted {
+    public interface VehicleListingSubmitted : CorrelatedBy<Guid> {
         string Manufacturer { get; set; }
         string VehicleModel { get; set; }
         string Registration { get; set; }

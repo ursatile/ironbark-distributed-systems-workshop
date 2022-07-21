@@ -13,6 +13,7 @@ namespace AutoMate.Saga {
 
         static async Task Main(string[] args) {
             var host = Host.CreateDefaultBuilder(args)
+
                 .ConfigureServices(services => {
                     services.AddMassTransit(mt => {
                         mt.AddConsumersFromNamespaceContaining<SubmitVehicleListingConsumer>();
@@ -22,7 +23,7 @@ namespace AutoMate.Saga {
                             config.ConfigureEndpoints(context);
                         });
                         mt.AddSagaStateMachine<VehicleListingSaga, VehicleListingState>()
-                            .InMemoryRepository();
+                            .RedisRepository();
                     });
                 })
                 .Build();

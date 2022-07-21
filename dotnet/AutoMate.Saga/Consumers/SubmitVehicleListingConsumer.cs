@@ -9,6 +9,7 @@ namespace AutoMate.Saga.Consumers {
         public async Task Consume(ConsumeContext<SubmitVehicleListing> context) {
             await Console.Out.WriteLineAsync($"We got a SubmitVehicleListing command: {context.Message.Registration}");
             var evt = new {
+                context.Message.CorrelationId,
                 context.Message.Color,
                 ListedAt = DateTimeOffset.UtcNow,
                 context.Message.Year,

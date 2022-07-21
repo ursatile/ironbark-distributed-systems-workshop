@@ -20,13 +20,13 @@ namespace AutoMate.StatusChecker {
             await Console.Out.WriteLineAsync($"Status: {statusFromApi}");
             switch (statusFromApi) {
                 case VehicleStatus.OK:
-                    await context.Publish<VehicleApprovedForListing>(new { message.Registration });
+                    await context.Publish<VehicleApprovedForListing>(new { message.CorrelationId, message.Registration });
                     break;
                 case VehicleStatus.STOLEN:
-                    await context.Publish<VehicleConfirmedStolen>(new { message.Registration });
+                    await context.Publish<VehicleConfirmedStolen>(new { message.CorrelationId, message.Registration });
                     break;
                 case VehicleStatus.WRITTEN_OFF:
-                    await context.Publish<VehicleConfirmedWrittenOff>(new { message.Registration });
+                    await context.Publish<VehicleConfirmedWrittenOff>(new { message.CorrelationId, message.Registration });
                     break;
             }
         }

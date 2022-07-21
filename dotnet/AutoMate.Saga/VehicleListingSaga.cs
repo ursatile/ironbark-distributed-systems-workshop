@@ -23,20 +23,12 @@ namespace AutoMate.Saga {
 
             InstanceState(x => x.CurrentState);
 
-            Event(() => VehicleListingSubmitted,
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration)
-                    .SelectId(_ => NewId.NextGuid()));
-            
-            Event(() => VehicleConfirmedWrittenOff,
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleConfirmedStolen,
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehicleApprovedForListing,
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehiclePriceCalculated, 
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
-            Event(() => VehiclePutOnWebsite,
-                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehicleListingSubmitted, saga => saga.SelectId(_ => NewId.NextGuid()));
+            Event(() => VehicleConfirmedWrittenOff);
+            Event(() => VehicleConfirmedStolen);
+            Event(() => VehicleApprovedForListing);
+            Event(() => VehiclePriceCalculated);
+            Event(() => VehiclePutOnWebsite);
 
             Initially(
                 When(VehicleListingSubmitted)
@@ -50,6 +42,7 @@ namespace AutoMate.Saga {
                         context.Saga.Manufacturer = context.Message.Manufacturer;
                         context.Saga.VehicleModel = context.Message.VehicleModel;
                         await endpoint.Send<CheckVehicleStatus>(new {
+                            context.Saga.CorrelationId,
                             context.Message.Registration,
                         });
                     }).TransitionTo(AwaitingStatus)
@@ -86,6 +79,7 @@ namespace AutoMate.Saga {
                         Console.ForegroundColor = oldColor;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:calculate-vehicle-price"));
                         await endpoint.Send<CalculateVehiclePrice>(new {
+                            context.Saga.CorrelationId,
                             context.Saga.Registration,
                             context.Saga.Year,
                             context.Saga.Color,
@@ -104,6 +98,7 @@ namespace AutoMate.Saga {
                         context.Saga.CurrencyCode = context.Message.CurrencyCode;
                         var endpoint = await context.GetSendEndpoint(new Uri("queue:put-vehicle-on-website"));
                         await endpoint.Send<PutVehicleOnWebsite>(new {
+                            context.Saga.CorrelationId,
                             context.Saga.Registration,
                             context.Saga.Year,
                             context.Saga.Color,
@@ -119,8 +114,10 @@ namespace AutoMate.Saga {
                     .Then(context => {
                         Console.WriteLine(
                             $"Vehicle with Rego: {context.Message.Registration} put on website");
-                    }).Finalize());
+                    })
+                    .Finalize());
 
+            SetCompletedWhenFinalized();
         }
     }
 }
