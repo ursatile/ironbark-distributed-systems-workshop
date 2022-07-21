@@ -102,7 +102,7 @@ namespace AutoMate.Saga {
                             $"Calculated a price: {context.Message.Price} {context.Message.CurrencyCode}");
                         context.Saga.Price = context.Message.Price;
                         context.Saga.CurrencyCode = context.Message.CurrencyCode;
-                        var endpoint = await context.GetSendEndpoint(new Uri("queue:put-the-vehicle-on-the-website"));
+                        var endpoint = await context.GetSendEndpoint(new Uri("queue:put-vehicle-on-website"));
                         await endpoint.Send<PutVehicleOnWebsite>(new {
                             context.Saga.Registration,
                             context.Saga.Year,
