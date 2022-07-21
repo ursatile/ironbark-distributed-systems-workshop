@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using System;
 using Autobarn.Website.GraphQL.GraphTypes;
 using Autobarn.Website.GraphQL.Schemas;
+using Autobarn.Website.Hubs;
 using Autobarn.Website.Services;
 using GraphiQl;
 using GraphQL;
@@ -45,6 +46,7 @@ namespace Autobarn.Website {
                     .AddSchema<AutobarnSchema>()
                     .AddGraphTypes(typeof(VehicleGraphType).Assembly)
             );
+			services.AddSignalR();
             services.AddMassTransit(x => {
                 x.SetKebabCaseEndpointNameFormatter();
                 x.UsingRabbitMq((context, rabbit) => {
@@ -70,6 +72,7 @@ namespace Autobarn.Website {
             app.UseGraphQL<ISchema>();
             app.UseGraphiQl("/graphiql");
             app.UseEndpoints(endpoints => {
+                endpoints.MapHub<AutobarnHub>("/hub");
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
