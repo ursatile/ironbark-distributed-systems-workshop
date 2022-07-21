@@ -21,7 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.PricingClient", "A
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Saga", "AutoMate.Saga\AutoMate.Saga.csproj", "{C9DB4D08-C3CE-4571-9CCA-FCC0143B4286}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoMate.Notifier", "AutoMate.Notifier\AutoMate.Notifier.csproj", "{E4BD4E00-EAAD-406A-91A6-71C0087F4743}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AutoMate.Notifier", "AutoMate.Notifier\AutoMate.Notifier.csproj", "{E4BD4E00-EAAD-406A-91A6-71C0087F4743}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Autobarn.Website", "Autobarn.Website\Autobarn.Website.csproj", "{8027A846-C32E-454F-8415-0B125BAEDF5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -69,6 +71,10 @@ Global
 		{E4BD4E00-EAAD-406A-91A6-71C0087F4743}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4BD4E00-EAAD-406A-91A6-71C0087F4743}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4BD4E00-EAAD-406A-91A6-71C0087F4743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8027A846-C32E-454F-8415-0B125BAEDF5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8027A846-C32E-454F-8415-0B125BAEDF5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8027A846-C32E-454F-8415-0B125BAEDF5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8027A846-C32E-454F-8415-0B125BAEDF5B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
