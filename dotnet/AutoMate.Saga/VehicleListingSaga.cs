@@ -11,6 +11,7 @@ namespace AutoMate.Saga {
         public Event<VehicleConfirmedWrittenOff> VehicleConfirmedWrittenOff { get; private set; }
         public Event<VehicleApprovedForListing> VehicleApprovedForListing { get; private set; }
         public Event<VehiclePriceCalculated> VehiclePriceCalculated { get; private set; }
+        public Event<VehiclePutOnWebsite> VehiclePutOnWebsite { get; private set; }
 
         public State AwaitingStatus { get; private set; }
         public State AwaitingPrice { get; private set; }
@@ -25,7 +26,7 @@ namespace AutoMate.Saga {
             Event(() => VehicleListingSubmitted,
                 saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration)
                     .SelectId(_ => NewId.NextGuid()));
-            ;
+            
             Event(() => VehicleConfirmedWrittenOff,
                 saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
             Event(() => VehicleConfirmedStolen,
@@ -33,6 +34,8 @@ namespace AutoMate.Saga {
             Event(() => VehicleApprovedForListing,
                 saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
             Event(() => VehiclePriceCalculated, 
+                saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
+            Event(() => VehiclePutOnWebsite,
                 saga => saga.CorrelateBy(state => state.Registration, context => context.Message.Registration));
 
             Initially(
@@ -93,13 +96,31 @@ namespace AutoMate.Saga {
                     .TransitionTo(AwaitingPrice));
             During(AwaitingPrice,
                 When(VehiclePriceCalculated)
-                    .Then(context => {
+                    .ThenAsync(async context => {
+
                         Console.WriteLine(
                             $"Calculated a price: {context.Message.Price} {context.Message.CurrencyCode}");
                         context.Saga.Price = context.Message.Price;
                         context.Saga.CurrencyCode = context.Message.CurrencyCode;
+                        var endpoint = await context.GetSendEndpoint(new Uri("queue:put-the-vehicle-on-the-website"));
+                        await endpoint.Send<PutVehicleOnWebsite>(new {
+                            context.Saga.Registration,
+                            context.Saga.Year,
+                            context.Saga.Color,
+                            context.Saga.Manufacturer,
+                            context.Saga.VehicleModel,
+                            context.Saga.Price,
+                            context.Saga.CurrencyCode
+                        });
                     })
                     .TransitionTo(ReadyToPublish));
+            During(ReadyToPublish,
+                When(VehiclePutOnWebsite)
+                    .Then(context => {
+                        Console.WriteLine(
+                            $"Vehicle with Rego: {context.Message.Registration} put on website");
+                    }).Finalize());
+
         }
     }
 }
